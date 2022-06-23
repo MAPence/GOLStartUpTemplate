@@ -14,11 +14,10 @@ namespace GOLStartUpTemplate
 
     public partial class Form1 : Form
     {
-        static int beanstalk = 40;
-        static int wideload = 40;
+        static int beanstalk = Properties.Settings.Default.giant;
+        static int wideload = Properties.Settings.Default.doublewide;
         static int livenCells = 0;
         int seeds = new Random().Next();
-        bool huddle = true;
         // The universe array
         bool[,] universe = new bool[wideload, beanstalk];
 
@@ -26,8 +25,8 @@ namespace GOLStartUpTemplate
 
 
         // Drawing colors
-        Color gridColor = Color.DarkCyan;
-        Color cellColor = Color.PeachPuff;
+        Color gridColor = Properties.Settings.Default.gridiron;
+        Color cellColor = Properties.Settings.Default.cellular;
         Color huddlecolor = Color.DarkViolet;
 
         // The Timer class
@@ -39,9 +38,9 @@ namespace GOLStartUpTemplate
         public Form1()
         {
             InitializeComponent();
-
+            graphicsPanel1.BackColor = Properties.Settings.Default.backhair;
             // Setup the timer
-            timer.Interval = 100; // milliseconds
+            timer.Interval = Properties.Settings.Default.sundial; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
         }
@@ -109,7 +108,9 @@ namespace GOLStartUpTemplate
 
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
-            toolStripStatusLabel1.Text = "Living Cells = " + liverCells.ToString();
+            toolStripStatusLabel2.Text = "Living Cells = " + liverCells.ToString();
+            toolStripStatusLabel1.Text = "Interval = " + timer.Interval.ToString();
+            toolStripStatusLabel3.Text = "Seed = " + seeds;
             graphicsPanel1.Invalidate();
         }
 
@@ -942,8 +943,100 @@ namespace GOLStartUpTemplate
             }
             graphicsPanel1.Invalidate();
         }
+        //color options
+        private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog gdlg = new ColorDialog();
+            gdlg.Color = gridColor;
+            if (DialogResult.OK == gdlg.ShowDialog())
+            {
+                gridColor = gdlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+        }
 
+        private void cellColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog gdlg = new ColorDialog();
+            gdlg.Color = cellColor;
+            if (DialogResult.OK == gdlg.ShowDialog())
+            {
+                cellColor = gdlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+        }
 
+        private void backColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog gdlg = new ColorDialog();
+            gdlg.Color = graphicsPanel1.BackColor;
+            if (DialogResult.OK == gdlg.ShowDialog())
+            {
+               graphicsPanel1.BackColor = gdlg.Color;
+            }
+        }
+        //reset\reload
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reset();
+            wideload = Properties.Settings.Default.doublewide;
+            beanstalk = Properties.Settings.Default.giant;
+            graphicsPanel1.BackColor = Properties.Settings.Default.backhair;
+            gridColor = Properties.Settings.Default.gridiron;
+            cellColor = Properties.Settings.Default.cellular;
+            timer.Interval = Properties.Settings.Default.sundial;
+            universe = new bool[wideload, beanstalk];
+            scratchPad = new bool[wideload, beanstalk];
+            int liverCells = 0;
+            for (int y = 0; y < universe.GetLength(1); y++) //cell counter
+            {
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y] == true)
+                    {
+                        liverCells++;
+                    }
+                }
+            }
+            graphicsPanel1.Invalidate();
+
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reload();
+            wideload = Properties.Settings.Default.doublewide;
+            beanstalk = Properties.Settings.Default.giant;
+            graphicsPanel1.BackColor = Properties.Settings.Default.backhair;
+            gridColor = Properties.Settings.Default.gridiron;
+            cellColor = Properties.Settings.Default.cellular;
+            timer.Interval = Properties.Settings.Default.sundial;
+            universe = new bool[wideload, beanstalk];
+            scratchPad = new bool[wideload, beanstalk];
+            int liverCells = 0;
+            for (int y = 0; y < universe.GetLength(1); y++) //cell counter
+            {
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y] == true)
+                    {
+                        liverCells++;
+                    }
+                }
+            }
+            graphicsPanel1.Invalidate();
+        }
+        //save settings
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.doublewide = wideload;
+            Properties.Settings.Default.giant = beanstalk;
+            Properties.Settings.Default.backhair = graphicsPanel1.BackColor;
+            Properties.Settings.Default.gridiron = gridColor;
+            Properties.Settings.Default.cellular = cellColor;
+            Properties.Settings.Default.sundial = timer.Interval;
+            Properties.Settings.Default.Save();
+        }
     }
 
 }
